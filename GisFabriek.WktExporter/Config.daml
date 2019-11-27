@@ -1,0 +1,37 @@
+﻿<ArcGIS defaultAssembly="GisFabriek.WktExporter.dll" defaultNamespace="GisFabriek.WktExporter" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
+  <AddInInfo id="{8925a96d-7c04-4644-89f8-9d0928a79d8e}" version="1.0" desktopVersion="2.4.19948">
+    <Name>GisFabriek.WktExporter</Name>
+    <Description>GisFabriek.WktExporter exports an Esri Geometry to a WKT string</Description>
+    <Image>Images\AddinDesktop32.png</Image>
+    <Author>wWllem Ligtendag</Author>
+    <Company>De GISFabriek</Company>
+    <Date>11/26/2019 4:40:43 PM, 2019</Date>
+    <Subject>Framework</Subject>
+    <!-- Note subject can be one or more of these topics:
+                    Content, Framework, Editing, Geodatabase, Geometry, Geoprocessing, Layouts, Map Authoring, Map Exploration -->
+  </AddInInfo>
+  <modules>
+    <insertModule id="GisFabriek.WktExporter_Module" className="Module1" autoLoad="false" caption="Module1">
+      <!-- uncomment to have the control hosted on a separate tab-->
+      <tabs>
+        <tab id="GisFabriekWktExporter_Tab1" caption="GF Utils">
+          <group refID="GisFabriekWktExporter_Tools" />
+        </tab>
+      </tabs>
+      <groups>
+        <!-- comment this out if you have no controls on the Addin tab to avoid
+              an empty group-->
+        <group id="GisFabriekWktExporter_Tools" caption="Well-known Text" appearsOnAddInTab="false">
+          <!-- host controls within groups -->
+          <button refID="GisFabriek_WktExporter_PolygonExportButton" size="large" />
+        </group>
+      </groups>
+      <controls>
+        <!-- add your controls here -->
+        <button id="GisFabriek_WktExporter_PolygonExportButton" caption="Export to WKT" className="PolygonExportButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
+          <tooltip heading="Tooltip Heading">Export the first selected geometry to WKT<disabledText /></tooltip>
+        </button>
+      </controls>
+    </insertModule>
+  </modules>
+</ArcGIS>
