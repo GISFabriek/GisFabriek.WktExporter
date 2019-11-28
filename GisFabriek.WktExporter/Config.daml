@@ -3,7 +3,7 @@
     <Name>GisFabriek.WktExporter</Name>
     <Description>GisFabriek.WktExporter exports an Esri Geometry to a WKT string</Description>
     <Image>Images\AddinDesktop32.png</Image>
-    <Author>wWllem Ligtendag</Author>
+    <Author>Willem Ligtendag</Author>
     <Company>De GISFabriek</Company>
     <Date>11/26/2019 4:40:43 PM, 2019</Date>
     <Subject>Framework</Subject>
@@ -23,13 +23,17 @@
               an empty group-->
         <group id="GisFabriekWktExporter_Tools" caption="Well-known Text" appearsOnAddInTab="false">
           <!-- host controls within groups -->
-          <button refID="GisFabriek_WktExporter_PolygonExportButton" size="large" />
+          <button refID="GisFabriek_WktExporter_ExportGeometryToWktButton" size="large" />
+          <button refID="GisFabriek_WktExporter_ImportGeometryFromWktButton" size="large" />
         </group>
       </groups>
       <controls>
         <!-- add your controls here -->
-        <button id="GisFabriek_WktExporter_PolygonExportButton" caption="Export to WKT" className="PolygonExportButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
+        <button id="GisFabriek_WktExporter_ExportGeometryToWktButton" caption="Export to WKT" className="ExportGeometryToWktButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
           <tooltip heading="Tooltip Heading">Export the first selected geometry to WKT<disabledText /></tooltip>
+        </button>
+        <button id="GisFabriek_WktExporter_ImportGeometryFromWktButton" caption="Import from WKT" className="ImportGeometryFromWktButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonBlue32.png">
+          <tooltip heading="Tooltip Heading">Import WKT into a FeatureLayer<disabledText /></tooltip>
         </button>
       </controls>
     </insertModule>

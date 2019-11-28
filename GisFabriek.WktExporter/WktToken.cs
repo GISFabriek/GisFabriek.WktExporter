@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace GisFabriek.WktExporter
@@ -105,7 +106,7 @@ namespace GisFabriek.WktExporter
                 }
                 var text = Text.Substring(StartIndex, 1 + EndIndex - StartIndex);
                 var words = text.Split((Char[])null, StringSplitOptions.RemoveEmptyEntries);
-                return words.Select(Convert.ToDouble);
+                return words.Select(x => Convert.ToDouble(x, CultureInfo.InvariantCulture));
             }
         }
 

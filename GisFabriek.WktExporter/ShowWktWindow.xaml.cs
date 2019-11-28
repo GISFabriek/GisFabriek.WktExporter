@@ -39,5 +39,10 @@ namespace GisFabriek.WktExporter
                 File.WriteAllText(saveFileDialog.FileName, WktText);
             }
         }
+
+        private void ClipBoardButton_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(WktText);
+        }
     }
 }

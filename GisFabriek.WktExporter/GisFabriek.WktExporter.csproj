@@ -123,12 +123,17 @@
     <AddInContent Include="DarkImages\AddInDesktop32.png" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddWktWindow.xaml.cs">
+      <DependentUpon>AddWktWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ImportGeometryFromWktButton.cs" />
     <Compile Include="Module1.cs" />
-    <Compile Include="PolygonExportButton.cs" />
+    <Compile Include="ExportGeometryToWktButton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShowWktWindow.xaml.cs">
       <DependentUpon>ShowWktWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UiHelper.cs" />
     <Compile Include="WktGeometryExtensions.cs" />
     <Compile Include="WktText.cs" />
     <Compile Include="WktToken.cs" />
@@ -147,6 +152,10 @@
     <AddInContent Include="DarkImages\GenericButtonBlue32.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="AddWktWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ShowWktWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
