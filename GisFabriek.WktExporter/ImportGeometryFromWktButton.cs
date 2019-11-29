@@ -57,12 +57,12 @@ namespace GisFabriek.WktExporter
                 return;
             }
 
-            var wkid = await QueuedTask.Run(() => _selectedFeatureLayer.GetSpatialReference().Wkid);
+            var wkId = await QueuedTask.Run(() => _selectedFeatureLayer.GetSpatialReference().Wkid);
             var shapeType = await QueuedTask.Run(() => _selectedFeatureLayer.ShapeType);
             _addWktWindow = new AddWktWindow
             {
                 Owner = Application.Current.MainWindow, FeatureLayerName = $"Layer: {_selectedFeatureLayer.Name}",
-                TypeInfo = $"Type: {shapeType}; Spatial Reference: {wkid}"
+                TypeInfo = $"Type: {shapeType}; Spatial Reference: {wkId}"
             };
             if (_addWktWindow.ShowDialog() == true)
             {
@@ -76,11 +76,13 @@ namespace GisFabriek.WktExporter
                 var wktText = new WktText(text);
                 if (!CompareType(wktText.Type, shapeType))
                 {
-                    MessageBox.Show("Please enter a valid WKT string having the correct geometry type");
+                    var shapeName = shapeType.ToString();
+                    shapeName = shapeName.Substring(12);
+                    MessageBox.Show($"WKT is not a {shapeName}. Please enter a valid {shapeName} WKT string");
                     return;
                 }
 
-                var geometry = await text.ToGeometry(wkid, true);
+                var geometry = await text.ToGeometry(wkId, true);
                 var succeeded = await AddGeometry(_selectedFeatureLayer, geometry);
                 if (!succeeded)
                 {
@@ -128,16 +130,16 @@ namespace GisFabriek.WktExporter
                     }
 
                     return false;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         private async Task<bool> AddGeometry(FeatureLayer featureLayer, Geometry geometry)
         {
            return await QueuedTask.Run(() =>
             {
-                var editOperation = new EditOperation {Name = "Create Feature"};
+                var editOperation = new EditOperation {Name = "Create Feature from WKT"};
                 editOperation.Create(featureLayer, geometry);
                 return editOperation.ExecuteAsync();
             });

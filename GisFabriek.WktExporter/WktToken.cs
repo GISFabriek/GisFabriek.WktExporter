@@ -84,7 +84,7 @@ namespace GisFabriek.WktExporter
                     {
                         yield return new WktToken(Text, currentStart, currentEnd - 1);
                         currentStart = currentEnd + 1;
-                        while (currentStart < EndIndex && Char.IsWhiteSpace(Text[currentStart]))
+                        while (currentStart < EndIndex && char.IsWhiteSpace(Text[currentStart]))
                         {
                             currentStart++;
                         }
@@ -102,10 +102,10 @@ namespace GisFabriek.WktExporter
             {
                 if (IsEmpty)
                 {
-                    return new double[0];
+                    return Array.Empty<double>();
                 }
                 var text = Text.Substring(StartIndex, 1 + EndIndex - StartIndex);
-                var words = text.Split((Char[])null, StringSplitOptions.RemoveEmptyEntries);
+                var words = text.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
                 return words.Select(x => Convert.ToDouble(x, CultureInfo.InvariantCulture));
             }
         }

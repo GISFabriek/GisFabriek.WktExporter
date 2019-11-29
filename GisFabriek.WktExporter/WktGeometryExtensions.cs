@@ -404,7 +404,7 @@ namespace GisFabriek.WktExporter
 
         private static async Task<Geometry> BuildPoint(WktText wkt, SpatialReference spatialReference)
         {
-            return await BuildPoint(wkt.Token, wkt, spatialReference);
+            return await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run(async () => await BuildPoint(wkt.Token, wkt, spatialReference));
         }
 
         private static async Task<Geometry> BuildMultiPoint(WktText wkt, SpatialReference spatialReference)
@@ -507,22 +507,22 @@ namespace GisFabriek.WktExporter
             var partCount = coordinates.Length;
             if (!wkt.HasZ && !wkt.HasM && partCount != 2)
             {
-                throw new ArgumentException("Mal-formed Well-known Text, wrong number of elements, expecting x and y");
+                throw new ArgumentException("Malformed Well-known Text, wrong number of elements, expecting x and y");
             }
 
             if (wkt.HasZ && !wkt.HasM && partCount != 3)
             {
-                throw new ArgumentException("Mal-formed Well-known Text, wrong number of elements, expecting x y z");
+                throw new ArgumentException("Malformed Well-known Text, wrong number of elements, expecting x y z");
             }
 
             if (!wkt.HasZ && wkt.HasM && partCount != 3)
             {
-                throw new ArgumentException("Mal-formed Well-known Text, wrong number of elements, expecting x y m");
+                throw new ArgumentException("Malformed Well-known Text, wrong number of elements, expecting x y m");
             }
 
             if (wkt.HasZ && wkt.HasM && partCount != 4)
             {
-                throw new ArgumentException("Mal-formed Well-known Text, wrong number of elements, expecting x y z m");
+                throw new ArgumentException("Malformed Well-known Text, wrong number of elements, expecting x y z m");
             }
 
             return await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run(() =>
