@@ -29,10 +29,10 @@
       </groups>
       <controls>
         <!-- add your controls here -->
-        <button id="GisFabriek_WktExporter_ExportGeometryToWktButton" caption="Export to WKT" className="ExportGeometryToWktButton" loadOnClick="true" smallImage="Images/GenericButtonBlue16.png" largeImage="Images/GenericButtonBlue32.png">
+        <button id="GisFabriek_WktExporter_ExportGeometryToWktButton" caption="Export to WKT" className="ExportGeometryToWktButton" loadOnClick="true" smallImage="Images/GenericButtonBlue16.png" largeImage="Images/GFToWkt.png">
           <tooltip heading="Tooltip Heading">Export the first selected geometry to WKT<disabledText /></tooltip>
         </button>
-        <button id="GisFabriek_WktExporter_ImportGeometryFromWktButton" caption="Import from WKT" className="ImportGeometryFromWktButton" loadOnClick="true" smallImage="Images/GenericButtonBlue16.png" largeImage="Images/GenericButtonBlue32.png">
+        <button id="GisFabriek_WktExporter_ImportGeometryFromWktButton" caption="Import from WKT" className="ImportGeometryFromWktButton" loadOnClick="true" smallImage="Images/GenericButtonBlue16.png" largeImage="Images/GFFromWkt.png">
           <tooltip heading="Tooltip Heading">Import WKT into a FeatureLayer<disabledText /></tooltip>
         </button>
       </controls>

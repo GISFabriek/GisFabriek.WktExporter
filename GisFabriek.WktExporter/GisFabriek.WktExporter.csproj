@@ -173,6 +173,13 @@
   <ItemGroup>
     <AddInContent Include="DarkImages\GenericButtonPurple32.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\GISFabriek.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AddInContent Include="Images\GFFromWkt.png" />
+    <AddInContent Include="Images\GFToWkt.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!--
   PackageAction can be:

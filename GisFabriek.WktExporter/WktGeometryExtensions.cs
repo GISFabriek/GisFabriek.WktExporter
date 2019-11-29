@@ -404,14 +404,14 @@ namespace GisFabriek.WktExporter
 
         private static async Task<Geometry> BuildPoint(WktText wkt, SpatialReference spatialReference)
         {
-            return await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run(async () => await BuildPoint(wkt.Token, wkt, spatialReference));
+            return await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run(() => BuildPoint(wkt.Token, wkt, spatialReference));
         }
 
         private static async Task<Geometry> BuildMultiPoint(WktText wkt, SpatialReference spatialReference)
         {
-            return await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run(async () =>
+            return await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run(() =>
             {
-                var points = await GetMapPoints(wkt.Token, wkt, spatialReference);
+                var points = GetMapPoints(wkt.Token, wkt, spatialReference);
 
                 using (var polylineBuilder = new MultipointBuilder(points))
                 {
@@ -423,9 +423,9 @@ namespace GisFabriek.WktExporter
 
         private static async Task<Geometry> BuildPolyline(WktText wkt, SpatialReference spatialReference, bool simplified)
         {
-            return await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run(async () =>
+            return await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run( () =>
             {
-                var path = await GetMapPoints(wkt.Token, wkt, spatialReference);
+                var path = GetMapPoints(wkt.Token, wkt, spatialReference);
                 using (var polylineBuilder = new PolylineBuilder(path))
                 {
                     polylineBuilder.SpatialReference = spatialReference;
@@ -442,13 +442,13 @@ namespace GisFabriek.WktExporter
 
         private static async Task<Geometry> BuildMultiPolyline(WktText wkt, SpatialReference spatialReference, bool simplified)
         {
-            return await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run(async () =>
+            return await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run(() =>
             {
                 using (var polylineBuilder = new PolylineBuilder(spatialReference))
                 {
                     foreach (var lineString in wkt.Token.Tokens)
                     {
-                        var path = await GetMapPoints(lineString, wkt, spatialReference);
+                        var path = GetMapPoints(lineString, wkt, spatialReference);
                         polylineBuilder.AddPart(path);
                     }
 
@@ -466,13 +466,13 @@ namespace GisFabriek.WktExporter
 
         private static async Task<Geometry> BuildPolygon(WktText wkt, SpatialReference spatialReference, bool simplified)
         {
-            return await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run(async () =>
+            return await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run(() =>
             {
                 using (var polygonBuilder = new PolygonBuilder(spatialReference))
                 {
                     foreach (var lineString in wkt.Token.Tokens)
                     {
-                        var path = await GetMapPoints(lineString, wkt, spatialReference);
+                        var path = GetMapPoints(lineString, wkt, spatialReference);
                         path.Reverse();
                         polygonBuilder.AddPart(path);
                     }
@@ -487,21 +487,20 @@ namespace GisFabriek.WktExporter
             });
         }
 
-        private static async Task<List<MapPoint>> GetMapPoints(WktToken token, WktText wkt, SpatialReference spatialReference)
+        private static List<MapPoint> GetMapPoints(WktToken token, WktText wkt, SpatialReference spatialReference)
         {
-            return await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run(async () =>
-            {
+            
                 var points = new List<MapPoint>();
                 foreach (var point in token.Tokens)
                 {
-                    var mapPoint = await BuildPoint(point, wkt, spatialReference);
+                    var mapPoint = BuildPoint(point, wkt, spatialReference);
                     points.Add(mapPoint);
                 }
                 return points;
-            });
+            
         }
 
-        private static async Task<MapPoint> BuildPoint(WktToken token, WktText wkt, SpatialReference spatialReference)
+        private static MapPoint BuildPoint(WktToken token, WktText wkt, SpatialReference spatialReference)
         {
             var coordinates = token.Coords.ToArray();
             var partCount = coordinates.Length;
@@ -525,35 +524,32 @@ namespace GisFabriek.WktExporter
                 throw new ArgumentException("Malformed Well-known Text, wrong number of elements, expecting x y z m");
             }
 
-            return await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run(() =>
+            MapPoint mapPoint;
+            if (partCount == 2)
             {
-                MapPoint mapPoint;
-                if (partCount == 2)
+                mapPoint = MapPointBuilder.CreateMapPoint(coordinates[0], coordinates[1], spatialReference);
+            }
+            else if (partCount == 3)
+            {
+                if (wkt.HasZ)
                 {
-                    mapPoint = MapPointBuilder.CreateMapPoint(coordinates[0], coordinates[1], spatialReference);
-                }
-                else if (partCount == 3)
-                {
-                    if (wkt.HasZ)
-                    {
-                        mapPoint = MapPointBuilder.CreateMapPoint(coordinates[0], coordinates[1], coordinates[2],
-                            spatialReference);
-                    }
-                    else
-                    {
-                        mapPoint = MapPointBuilder.CreateMapPoint(coordinates[0], coordinates[1], 0.0, coordinates[2],
-                            spatialReference);
-                    }
+                    mapPoint = MapPointBuilder.CreateMapPoint(coordinates[0], coordinates[1], coordinates[2],
+                        spatialReference);
                 }
                 else
                 {
-                    mapPoint = MapPointBuilder.CreateMapPoint(coordinates[0], coordinates[1], coordinates[2],
-                        coordinates[3],
+                    mapPoint = MapPointBuilder.CreateMapPoint(coordinates[0], coordinates[1], 0.0, coordinates[2],
                         spatialReference);
                 }
+            }
+            else
+            {
+                mapPoint = MapPointBuilder.CreateMapPoint(coordinates[0], coordinates[1], coordinates[2],
+                    coordinates[3],
+                    spatialReference);
+            }
 
-                return mapPoint;
-            });
+            return mapPoint;
         }
 
         private static async Task<SpatialReference> CreateSpatialReference(int wkId)

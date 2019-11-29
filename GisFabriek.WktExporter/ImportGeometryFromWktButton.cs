@@ -7,6 +7,7 @@ using ArcGIS.Desktop.Mapping;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using ArcGIS.Desktop.Framework;
 using MessageBox = ArcGIS.Desktop.Framework.Dialogs.MessageBox;
 
 namespace GisFabriek.WktExporter
@@ -86,14 +87,26 @@ namespace GisFabriek.WktExporter
                 var succeeded = await AddGeometry(_selectedFeatureLayer, geometry);
                 if (!succeeded)
                 {
-                    MessageBox.Show("Adding feature not successful");
+                    MessageBox.Show("Adding feature did not succeed");
                     return;
                 }
-
+                FrameworkApplication.AddNotification(new SucceededNotification()
+                {
+                    Title = "Ready",
+                    Message = "WKT Geometry added as new Feature. Please check the Feature attributes",
+                    ImageUrl = @"pack://application:,,,/GisFabriek.WktExporter;component/Images/GISFabriek.png"
+                });
             }
-
             _addWktWindow = null;
 
+        }
+
+        internal class SucceededNotification : Notification
+        {
+            protected override void OnClick()
+            {
+                FrameworkApplication.RemoveNotification(this);
+            }
         }
 
         private bool CompareType(WktType wktType, esriGeometryType geometryType)
