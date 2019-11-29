@@ -17,6 +17,10 @@ namespace GisFabriek.WktExporter
         private AddWktWindow _addWktWindow;
         private FeatureLayer _selectedFeatureLayer;
 
+        private const string EditOperationName = "Create Feature from WKT";
+        private const string NotificationImageUrl =
+            @"pack://application:,,,/GisFabriek.WktExporter;component/Images/GISFabriek.png";
+
         protected override void OnClick()
         {
             var mapView = MapView.Active;
@@ -25,7 +29,7 @@ namespace GisFabriek.WktExporter
             var selectedLayers = mapView.GetSelectedLayers();
             if (selectedLayers.Count == 0)
             {
-                MessageBox.Show("Please select a FeatureLayer");
+                MessageBox.Show(Localization.Resources.SelectFeatureLayerMessage);
                 return;
             }
 
@@ -34,13 +38,13 @@ namespace GisFabriek.WktExporter
                 select items).ToList();
             if (selectedFeatureLayers.Count == 0)
             {
-                MessageBox.Show("Please select a FeatureLayer");
+                MessageBox.Show(Localization.Resources.SelectFeatureLayerMessage);
                 return;
             }
 
             if (selectedFeatureLayers.Count > 1)
             {
-                MessageBox.Show("Please select one single FeatureLayer having the geometry type of the WKT");
+                MessageBox.Show(Localization.Resources.SelectOneSingleFeatureLayerWithCorrectGeometryType);
                 return;
             }
 
@@ -62,15 +66,15 @@ namespace GisFabriek.WktExporter
             var shapeType = await QueuedTask.Run(() => _selectedFeatureLayer.ShapeType);
             _addWktWindow = new AddWktWindow
             {
-                Owner = Application.Current.MainWindow, FeatureLayerName = $"Layer: {_selectedFeatureLayer.Name}",
-                TypeInfo = $"Type: {shapeType}; Spatial Reference: {wkId}"
+                Owner = Application.Current.MainWindow, FeatureLayerName = $"{Localization.Resources.LayerTextFragment}: {_selectedFeatureLayer.Name}",
+                TypeInfo = $"{Localization.Resources.TypeTextFragment}: {shapeType}; {Localization.Resources.SpatialReferenceTextFragment}: {wkId}"
             };
             if (_addWktWindow.ShowDialog() == true)
             {
                 var text = _addWktWindow.WktText;
                 if (string.IsNullOrWhiteSpace(text))
                 {
-                    MessageBox.Show("Please enter a valid WKT string");
+                    MessageBox.Show(Localization.Resources.EnterAValidWktStringMessage);
                     return;
                 }
 
@@ -79,7 +83,7 @@ namespace GisFabriek.WktExporter
                 {
                     var shapeName = shapeType.ToString();
                     shapeName = shapeName.Substring(12);
-                    MessageBox.Show($"WKT is not a {shapeName}. Please enter a valid {shapeName} WKT string");
+                    MessageBox.Show(string.Format(Localization.Resources.InvalidWktTypeMessageTemplate, shapeName));
                     return;
                 }
 
@@ -87,14 +91,14 @@ namespace GisFabriek.WktExporter
                 var succeeded = await AddGeometry(_selectedFeatureLayer, geometry);
                 if (!succeeded)
                 {
-                    MessageBox.Show("Adding feature did not succeed");
+                    MessageBox.Show(Localization.Resources.AddingFeatureDidNotSucceedErrorMessage);
                     return;
                 }
                 FrameworkApplication.AddNotification(new SucceededNotification()
                 {
-                    Title = "Ready",
-                    Message = "WKT Geometry added as new Feature. Please check the Feature attributes",
-                    ImageUrl = @"pack://application:,,,/GisFabriek.WktExporter;component/Images/GISFabriek.png"
+                    Title = Localization.Resources.ReadyTextFragment,
+                    Message = Localization.Resources.WktGeometryAddedMessage,
+                    ImageUrl = NotificationImageUrl
                 });
             }
             _addWktWindow = null;
@@ -152,7 +156,7 @@ namespace GisFabriek.WktExporter
         {
            return await QueuedTask.Run(() =>
             {
-                var editOperation = new EditOperation {Name = "Create Feature from WKT"};
+                var editOperation = new EditOperation {Name = EditOperationName };
                 editOperation.Create(featureLayer, geometry);
                 return editOperation.ExecuteAsync();
             });

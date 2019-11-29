@@ -51,7 +51,7 @@ namespace GisFabriek.WktExporter
 
                 if (!wktWindowShown)
                 {
-                    UiHelper.RunOnUiThread(() => { MessageBox.Show("Please select a Feature","No Feature selected");});
+                    UiHelper.RunOnUiThread(() => { MessageBox.Show(Localization.Resources.SelectAFeatureMessage, Localization.Resources.NoFeatureSelectedCaption);});
                 }
             });
         }

@@ -32,8 +32,7 @@ namespace GisFabriek.WktExporter
 
         private void ExportButton_Click(object sender, RoutedEventArgs e)
         {
-            var saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+            var saveFileDialog = new SaveFileDialog {Filter = Localization.Resources.SaveFileDialogFilterText};
             if (saveFileDialog.ShowDialog() == true)
             {
                 File.WriteAllText(saveFileDialog.FileName, WktText);
