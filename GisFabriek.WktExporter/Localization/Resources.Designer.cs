@@ -70,7 +70,7 @@ namespace GisFabriek.WktExporter.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Paste the WKT text and add to FeatureLayer.
+        ///   Looks up a localized string similar to Paste WKT text and add to FeatureLayer.
         /// </summary>
         public static string AddWktWindowTitle {
             get {

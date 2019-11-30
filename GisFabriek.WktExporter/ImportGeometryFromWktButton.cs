@@ -67,7 +67,7 @@ namespace GisFabriek.WktExporter
             _addWktWindow = new AddWktWindow
             {
                 Owner = Application.Current.MainWindow, FeatureLayerName = $"{Localization.Resources.LayerTextFragment}: {_selectedFeatureLayer.Name}",
-                TypeInfo = $"{Localization.Resources.TypeTextFragment}: {shapeType}; {Localization.Resources.SpatialReferenceTextFragment}: {wkId}"
+                TypeInfo = $"{Localization.Resources.TypeTextFragment}: {GetShapeName(shapeType)}; {Localization.Resources.SpatialReferenceTextFragment}: {wkId}"
             };
             if (_addWktWindow.ShowDialog() == true)
             {
@@ -81,8 +81,7 @@ namespace GisFabriek.WktExporter
                 var wktText = new WktText(text);
                 if (!CompareType(wktText.Type, shapeType))
                 {
-                    var shapeName = shapeType.ToString();
-                    shapeName = shapeName.Substring(12);
+                    var shapeName = GetShapeName(shapeType);
                     MessageBox.Show(string.Format(Localization.Resources.InvalidWktTypeMessageTemplate, shapeName));
                     return;
                 }
@@ -103,6 +102,13 @@ namespace GisFabriek.WktExporter
             }
             _addWktWindow = null;
 
+        }
+
+        private string GetShapeName(esriGeometryType shapeType)
+        {
+            var shapeName = shapeType.ToString();
+            shapeName = shapeName.Substring(12);
+            return shapeName;
         }
 
         internal class SucceededNotification : Notification

@@ -121,7 +121,7 @@
     <value>Adding feature did not succeed.</value>
   </data>
   <data name="AddWktWindowTitle" xml:space="preserve">
-    <value>Paste the WKT text and add to FeatureLayer</value>
+    <value>Paste WKT text and add to FeatureLayer</value>
   </data>
   <data name="CloseButtonText" xml:space="preserve">
     <value>Close</value>

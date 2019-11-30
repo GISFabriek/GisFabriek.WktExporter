@@ -121,7 +121,7 @@
     <value>Toevoegen feature mislukt.</value>
   </data>
   <data name="AddWktWindowTitle" xml:space="preserve">
-    <value>Plak de WKT tekst en voeg toe aan FeatureLayer</value>
+    <value>Plak WKT tekst en voeg toe aan FeatureLayer</value>
   </data>
   <data name="CloseButtonText" xml:space="preserve">
     <value>Sluit</value>
