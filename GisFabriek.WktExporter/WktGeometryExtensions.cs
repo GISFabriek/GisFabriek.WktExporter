@@ -77,14 +77,42 @@ namespace GisFabriek.WktExporter
 
         private static string BuildWellKnownText(MapPoint point)
         {
-            return string.Format(CultureInfo.InvariantCulture, "POINT ({0} {1})", point.X, point.Y);
+            var suffix = string.Empty;
+            if (point.HasZ)
+            {
+                suffix += "Z";
+            }
+
+            if (point.HasM)
+            {
+                suffix += "M";
+            }
+            if (suffix.Length > 0)
+            {
+                suffix += " ";
+            }
+            return string.Format(CultureInfo.InvariantCulture, "POINT {0}({1} {2})", suffix, point.X, point.Y);
         }
 
         private static string BuildWellKnownText(Multipoint points)
         {
             //Example - MULTIPOINT ((10 40), (40 30), (20 20), (30 10))
             //Example - MULTIPOINT (10 40, 40 30, 20 20, 30 10)
-            return "MULTIPOINT (" + BuildWellKnownText(points.Points) + ")";
+            var suffix = string.Empty;
+            if (points.HasZ)
+            {
+                suffix += "Z";
+            }
+
+            if (points.HasM)
+            {
+                suffix += "M";
+            }
+            if (suffix.Length > 0)
+            {
+                suffix += " ";
+            }
+            return "MULTIPOINT "+ suffix + "(" + BuildWellKnownText(points.Points) + ")";
         }
 
         private static string BuildWellKnownText(Polyline polyline)
@@ -102,17 +130,30 @@ namespace GisFabriek.WktExporter
             {
                 return string.Empty;
             }
+            var suffix = string.Empty;
+            if (polyline.HasZ)
+            {
+                suffix += "Z";
+            }
+
+            if (polyline.HasM)
+            {
+                suffix += "M";
+            }
+            if (suffix.Length > 0)
+            {
+                suffix += " ";
+            }
 
             if (partCount == 1)
             {
-                return "LINESTRING (" + BuildWellKnownText(polyline.Points) + ")";
+                return "LINESTRING "+ suffix + "(" + BuildWellKnownText(polyline.Points) + ")";
             }
 
-            return "MULTILINESTRING " + BuildWellKnownText(polyline.Parts);
+            return "MULTILINESTRING " + suffix + BuildWellKnownText(polyline.Parts);
         }
 
         private static async Task<string> BuildWellKnownText(Polygon polygon)
-
         {
             //Example - POLYGON ((30 10, 10 20, 20 40, 40 40, 30 10))
             //Example - POLYGON ((35 10, 10 20, 15 40, 45 45, 35 10),(20 30, 35 35, 30 20, 20 30))
@@ -150,14 +191,27 @@ namespace GisFabriek.WktExporter
             {
                 return string.Empty;
             }
+            var suffix = string.Empty;
+            if (polygon.HasZ)
+            {
+                suffix += "Z";
+            }
 
+            if (polygon.HasM)
+            {
+                suffix += "M";
+            }
+            if (suffix.Length > 0)
+            {
+                suffix += " ";
+            }
             if (outerPartCount > 1)
             {
                 var polygons = await MultipartToSinglePart(polygon);
-                return "MULTIPOLYGON " + BuildWellKnownText(polygons);
+                return "MULTIPOLYGON " + suffix + BuildWellKnownText(polygons);
             }
 
-            return "POLYGON " + BuildWellKnownText(polygon.Parts);
+            return "POLYGON " + suffix + BuildWellKnownText(polygon.Parts);
         }
 
         private static bool IsOuterRing(ReadOnlySegmentCollection part)
@@ -375,9 +429,27 @@ namespace GisFabriek.WktExporter
             }
 
             stringBuilder.AppendFormat(CultureInfo.InvariantCulture, "{0} {1}", points[0].X, points[0].Y);
+            if (points[0].HasZ)
+            {
+                stringBuilder.AppendFormat(CultureInfo.InvariantCulture, " {0}", points[0].Z);
+            }
+
+            if (points[0].HasM)
+            {
+                stringBuilder.AppendFormat(CultureInfo.InvariantCulture, " {0}", points[0].M);
+            }
             for (var i = 1; i < pointCount; i++)
             {
                 stringBuilder.AppendFormat(CultureInfo.InvariantCulture, ",{0} {1}", points[i].X, points[i].Y);
+                if (points[i].HasZ)
+                {
+                    stringBuilder.AppendFormat(CultureInfo.InvariantCulture, " {0}", points[i].Z);
+                }
+
+                if (points[i].HasM)
+                {
+                    stringBuilder.AppendFormat(CultureInfo.InvariantCulture, " {0}", points[i].M);
+                }
             }
             return stringBuilder.ToString();
         }

@@ -28,7 +28,6 @@ namespace GisFabriek.WktExporter
         private void ParsePrefix(string s)
         {
             var startIndex = s.IndexOf('(');
-            var endIndex = s.LastIndexOf(')');
             var prefix = startIndex == -1 ? s : s.Substring(0, startIndex);
 
             HasZ = false;
