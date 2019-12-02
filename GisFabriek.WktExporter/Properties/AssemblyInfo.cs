@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("GisFabriek.WktExporter")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Tool for converting an Esri Geometry to and from a WKT string")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("De GISFabriek")]
 [assembly: AssemblyProduct("GisFabriek.WktExporter")]
 [assembly: AssemblyCopyright("Copyright © De GISFabriek 2019")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("De GISFabriek")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
