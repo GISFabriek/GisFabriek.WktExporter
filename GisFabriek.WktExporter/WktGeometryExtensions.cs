@@ -84,7 +84,7 @@ namespace GisFabriek.WktExporter
         {
             //Example - MULTIPOINT ((10 40), (40 30), (20 20), (30 10))
             //Example - MULTIPOINT (10 40, 40 30, 20 20, 30 10)
-            return "MULTIPOINT " + BuildWellKnownText(points.Points);
+            return "MULTIPOINT (" + BuildWellKnownText(points.Points) + ")";
         }
 
         private static string BuildWellKnownText(Polyline polyline)
@@ -105,7 +105,7 @@ namespace GisFabriek.WktExporter
 
             if (partCount == 1)
             {
-                return "LINESTRING " + BuildWellKnownText(polyline.Points);
+                return "LINESTRING (" + BuildWellKnownText(polyline.Points) + ")";
             }
 
             return "MULTILINESTRING " + BuildWellKnownText(polyline.Parts);
@@ -247,7 +247,9 @@ namespace GisFabriek.WktExporter
                             {
                                 // use the PolygonBuilder turning the segments into a standalone 
                                 // polygon instance
-                                singleParts.Add(PolygonBuilder.CreatePolygon(polygonPart));
+                                var singlePart = PolygonBuilder.CreatePolygon(polygonPart);
+                                singlePart = GeometryEngine.Instance.SimplifyAsFeature(singlePart, true) as Polygon;
+                                singleParts.Add(singlePart);
                             }
 
                         break;
@@ -258,7 +260,9 @@ namespace GisFabriek.WktExporter
                             {
                                 // use the PolylineBuilder turning the segments into a standalone
                                 // polyline instance
-                                singleParts.Add(PolylineBuilder.CreatePolyline(polylinePart));
+                                var singlePart = PolylineBuilder.CreatePolyline(polylinePart);
+                                singlePart = GeometryEngine.Instance.SimplifyAsFeature(singlePart, true) as Polyline;
+                                singleParts.Add(singlePart);
                             }
 
                         break;
@@ -273,22 +277,32 @@ namespace GisFabriek.WktExporter
         private static string BuildWellKnownText(List<Geometry> polygons)
         {
             var stringBuilder = new StringBuilder();
-            stringBuilder.AppendFormat("(");
+            stringBuilder.Append("(");
+            var first = true;
             foreach (var item in polygons)
             {
                 if (item is Polygon polygon)
                 {
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        stringBuilder.Append(",");
+                    }
                     stringBuilder.Append(BuildWellKnownText(polygon.Parts));
                 }
             }
 
-            stringBuilder.AppendFormat("(");
+            stringBuilder.Append(")");
             return stringBuilder.ToString();
         }
 
         private static string BuildWellKnownText(ReadOnlyPartCollection parts)
         {
             var stringBuilder = new StringBuilder();
+            stringBuilder.Append("(");
             using (var segments = parts.GetEnumerator())
             {
                 var outerRing = new List<MapPoint>();
@@ -329,11 +343,11 @@ namespace GisFabriek.WktExporter
                 }
 
                 outerRing.Reverse();
-                stringBuilder.AppendFormat("({0}", BuildWellKnownText(outerRing));
+                stringBuilder.AppendFormat("({0})", BuildWellKnownText(outerRing));
                 foreach (var innerRing in innerRings)
                 {
                     innerRing.Reverse();
-                    stringBuilder.AppendFormat(",{0}", BuildWellKnownText(innerRing));
+                    stringBuilder.AppendFormat(",({0})", BuildWellKnownText(innerRing));
                 }
 
             }
@@ -351,8 +365,8 @@ namespace GisFabriek.WktExporter
 
         private static string BuildWellKnownText(List<MapPoint> points)
         {
-            //Example - (10 40)
-            //Example - (10 40, 40 30, 20 20, 30 10)
+            //Example - 10 40
+            //Example - 10 40, 40 30, 20 20, 30 10
             var stringBuilder = new StringBuilder();
             var pointCount = points.Count;
             if (pointCount < 1)
@@ -360,13 +374,11 @@ namespace GisFabriek.WktExporter
                 return string.Empty;
             }
 
-            stringBuilder.AppendFormat(CultureInfo.InvariantCulture, "({0} {1}", points[0].X, points[0].Y);
+            stringBuilder.AppendFormat(CultureInfo.InvariantCulture, "{0} {1}", points[0].X, points[0].Y);
             for (var i = 1; i < pointCount; i++)
             {
                 stringBuilder.AppendFormat(CultureInfo.InvariantCulture, ",{0} {1}", points[i].X, points[i].Y);
             }
-
-            stringBuilder.Append(")");
             return stringBuilder.ToString();
         }
 
@@ -398,20 +410,20 @@ namespace GisFabriek.WktExporter
                  case WktType.GeometryCollection:
                      throw new NotImplementedException("Well-known Text GeometryCollection to GeometryCollection is not yet supported");
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(wktString), "Unsupported geometry type: " + wkt.Type);
+                    throw new ArgumentOutOfRangeException(nameof(wktString), @"Unsupported geometry type: " + wkt.Type);
             }
         }
 
         private static async Task<Geometry> BuildPoint(WktText wkt, SpatialReference spatialReference)
         {
-            return await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run(() => BuildPoint(wkt.Token, wkt, spatialReference));
+            return await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run(() => BuildPoint(wkt.Token.PointArrays.FirstOrDefault()?.PointGroups.FirstOrDefault(), wkt, spatialReference));
         }
 
         private static async Task<Geometry> BuildMultiPoint(WktText wkt, SpatialReference spatialReference)
         {
             return await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run(() =>
             {
-                var points = GetMapPoints(wkt.Token, wkt, spatialReference);
+                var points = GetMapPoints(wkt.Token.PointArrays.FirstOrDefault(), wkt, spatialReference);
 
                 using (var polylineBuilder = new MultipointBuilder(points))
                 {
@@ -425,7 +437,7 @@ namespace GisFabriek.WktExporter
         {
             return await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run( () =>
             {
-                var path = GetMapPoints(wkt.Token, wkt, spatialReference);
+                var path = GetMapPoints(wkt.Token.PointArrays.FirstOrDefault(), wkt, spatialReference);
                 using (var polylineBuilder = new PolylineBuilder(path))
                 {
                     polylineBuilder.SpatialReference = spatialReference;
@@ -446,7 +458,7 @@ namespace GisFabriek.WktExporter
             {
                 using (var polylineBuilder = new PolylineBuilder(spatialReference))
                 {
-                    foreach (var lineString in wkt.Token.Tokens)
+                    foreach (var lineString in wkt.Token.PointArrays)
                     {
                         var path = GetMapPoints(lineString, wkt, spatialReference);
                         polylineBuilder.AddPart(path);
@@ -470,7 +482,7 @@ namespace GisFabriek.WktExporter
             {
                 using (var polygonBuilder = new PolygonBuilder(spatialReference))
                 {
-                    foreach (var lineString in wkt.Token.Tokens)
+                    foreach (var lineString in wkt.Token.PointArrays)
                     {
                         var path = GetMapPoints(lineString, wkt, spatialReference);
                         path.Reverse();
@@ -489,19 +501,26 @@ namespace GisFabriek.WktExporter
 
         private static List<MapPoint> GetMapPoints(WktToken token, WktText wkt, SpatialReference spatialReference)
         {
-            
-                var points = new List<MapPoint>();
-                foreach (var point in token.Tokens)
+            var points = new List<MapPoint>();
+                if (token == null)
+                {
+                    return points;
+
+                }
+                foreach (var point in token.PointGroups)
                 {
                     var mapPoint = BuildPoint(point, wkt, spatialReference);
                     points.Add(mapPoint);
                 }
                 return points;
-            
         }
 
         private static MapPoint BuildPoint(WktToken token, WktText wkt, SpatialReference spatialReference)
         {
+            if (token == null)
+            {
+                return null;
+            }
             var coordinates = token.Coords.ToArray();
             var partCount = coordinates.Length;
             if (!wkt.HasZ && !wkt.HasM && partCount != 2)

@@ -1,97 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
+using System.IO;
 
 namespace GisFabriek.WktExporter
 {
     internal class WktToken
     {
-        internal WktToken(string s, int startIndex, int endIndex)
+        private string _text;
+        internal WktToken(string text)
         {
-            Text = s;
-            StartIndex = startIndex;
-            EndIndex = endIndex;
+            _text = StripGeometryName(text);
+        }
 
-            //remove optional whitespace and/or parens at ends of token
-
-            if (IsEmpty)
+        internal IEnumerable<WktToken> PointArrays
+        {
+            get
             {
-                return;
-            }
+                _text = StripLeadingBraces(_text);
+                _text = StripTrailingBraces(_text);
+                while (_text.Contains("(("))
+                {
+                    _text = _text.Replace("((", "(");
+                }
+                while (_text.Contains("))"))
+                {
+                    _text = _text.Replace("))", ")");
+                }
 
-            while (char.IsWhiteSpace(Text[StartIndex]))
-            {
-                StartIndex++;
-            }
-
-            var removedLeadingParen = false;
-            if (Text[StartIndex] == '(')
-            {
-                StartIndex++;
-                removedLeadingParen = true;
-            }
-
-            while (char.IsWhiteSpace(Text[EndIndex]))
-            {
-                EndIndex--;
-            }
-
-            if (Text[EndIndex] == ')' && removedLeadingParen)
-            {
-                EndIndex--;
+                if (_text.Contains("),("))
+                {
+                   string[] separator = { "),(" };
+                   var split = _text.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+                   foreach (var item in split)
+                   {
+                       yield return new WktToken(item);
+                   }
+                }
+                else
+                {
+                    yield return new WktToken(_text);
+                }
+                
             }
         }
 
-        internal string Text { get; }
-
-        internal int StartIndex { get; }
-
-        internal int EndIndex { get; }
-
-
-        internal bool IsEmpty => StartIndex < 0 || EndIndex < StartIndex;
-
-        internal IEnumerable<WktToken> Tokens
+        internal  IEnumerable<WktToken> PointGroups
         {
             get
-            { if (IsEmpty)
+            {
+                if ((_text.Contains(" ")))
                 {
-                    yield break;
+                    string[] separator = { "," };
+                    var split = _text.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var item in split)
+                    {
+                        yield return new WktToken(item);
+                    }
                 }
-                var currentStart = StartIndex;
-                //currentStart may be a '(', do not let currentEnd go past it without nesting.
-                var currentEnd = StartIndex;
-                var nesting = 0;
-                while (true)
+                else
                 {
-                    if (currentEnd >= EndIndex)
-                    {
-                        yield return new WktToken(Text, currentStart, EndIndex);
-                        yield break;
-                    }
-
-                    if (Text[currentEnd] == '(')
-                    {
-                        nesting++;
-                    }
-                    if (Text[currentEnd] == ')')
-                    {
-                        nesting--;
-                    }
-
-                    if (nesting == 0 && Text[currentEnd] == ',')
-                    {
-                        yield return new WktToken(Text, currentStart, currentEnd - 1);
-                        currentStart = currentEnd + 1;
-                        while (currentStart < EndIndex && char.IsWhiteSpace(Text[currentStart]))
-                        {
-                            currentStart++;
-                        }
-                        //currentStart may be a '(', do not let currentEnd go past it without nesting.
-                        currentEnd = currentStart - 1;
-                    }
-                    currentEnd++;
+                    throw new InvalidDataException("Wrong Token level");
                 }
             }
         }
@@ -100,19 +69,47 @@ namespace GisFabriek.WktExporter
         {
             get
             {
-                if (IsEmpty)
+                if (_text.Contains(")(") || _text.Contains(","))
                 {
-                    return Array.Empty<double>();
+                    throw new InvalidDataException("Wrong Token level");
                 }
-                var text = Text.Substring(StartIndex, 1 + EndIndex - StartIndex);
-                var words = text.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
-                return words.Select(x => Convert.ToDouble(x, CultureInfo.InvariantCulture));
+                string[] separator = { " " };
+                var split = _text.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var item in split)
+                {
+                    yield return Convert.ToDouble(item, CultureInfo.InvariantCulture);
+                }
             }
         }
 
-        public override string ToString()
+        private string StripLeadingBraces(string text)
         {
-            return Text.Substring(StartIndex, 1 + EndIndex - StartIndex);
+            while (text.StartsWith("("))
+            {
+                text = text.Substring(1);
+            }
+
+            return text;
+        }
+
+        private string StripTrailingBraces(string text)
+        {
+            while (text.EndsWith(")"))
+            {
+                text = text.Substring(0, text.Length - 1);
+            }
+
+            return text;
+        }
+
+        private string StripGeometryName(string text)
+        {
+            var index = text.IndexOf("(", StringComparison.InvariantCulture);
+            if (index >= 0)
+            {
+                return text.Substring(index);
+            }
+            return text;
         }
     }
 }

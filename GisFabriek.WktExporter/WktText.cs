@@ -109,7 +109,7 @@ namespace GisFabriek.WktExporter
                 Type = WktType.GeometryCollection;
             }
 
-            Token = new WktToken(s, startIndex, endIndex);
+            Token = new WktToken(s);
         }
     }
 }

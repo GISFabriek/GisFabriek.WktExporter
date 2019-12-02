@@ -5,7 +5,7 @@ namespace GisFabriek.WktExporter
 {
     internal class Module1 : Module
     {
-        private static Module1 _this = null;
+        private static Module1 _this;
 
         /// <summary>
         /// Retrieve the singleton instance to this module here
