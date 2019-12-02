@@ -90,6 +90,7 @@ namespace GisFabriek.WktExporter
 
             if (prefix.StartsWith("multipoint"))
             {
+                s = NormalizeForMultiPoint(s);
                 Type = WktType.MultiPoint;
             }
 
@@ -109,6 +110,21 @@ namespace GisFabriek.WktExporter
             }
 
             Token = new WktToken(s);
+        }
+
+        private string NormalizeForMultiPoint(string s)
+        {
+            if (s.Contains("(("))
+            {
+                var first = s.IndexOf('(');
+                var prefix = s.Substring(0, first);
+                var rest = s.Substring(first);
+                rest = rest.Replace("(", string.Empty);
+                rest = rest.Replace(")", string.Empty);
+                s = prefix + "(" + rest + ")";
+            }
+
+            return s;
         }
     }
 }
