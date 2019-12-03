@@ -478,7 +478,7 @@ namespace GisFabriek.WktExporter
 
         private static string GetNumberAsString(double number)
         {
-            return string.Format(CultureInfo.InvariantCulture, "{0}", Math.Round(number, 8)); // Round to 8 decimal places to avoid weird numbers in the WKT
+            return double.IsNaN(number) ? "0.0" : string.Format(CultureInfo.InvariantCulture, "{0}", Math.Round(number, 8));
         }
 
         private static async Task<Geometry> BuildGeometry(string wktString, SpatialReference spatialReference, bool simplified)
