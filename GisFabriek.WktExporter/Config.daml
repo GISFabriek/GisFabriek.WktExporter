@@ -1,8 +1,8 @@
 ﻿<ArcGIS defaultAssembly="GisFabriek.WktExporter.dll" defaultNamespace="GisFabriek.WktExporter" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
   <AddInInfo id="{8925a96d-7c04-4644-89f8-9d0928a79d8e}" version="1.0" desktopVersion="2.4.19948">
     <Name>GisFabriek.WktExporter</Name>
-    <Description>GisFabriek.WktExporter exports an Esri Geometry to a WKT string</Description>
-    <Image>Images\AddinDesktop32.png</Image>
+    <Description>GisFabriek.WktExporter exports an Esri Geometry to a WKT string and vice versa</Description>
+    <Image>Images\GISFabriek.png</Image>
     <Author>Willem Ligtendag</Author>
     <Company>De GISFabriek</Company>
     <Date>11/26/2019 4:40:43 PM, 2019</Date>
@@ -29,10 +29,10 @@
       </groups>
       <controls>
         <!-- add your controls here -->
-        <button id="GisFabriek_WktExporter_ExportGeometryToWktButton" caption="Export to WKT" className="ExportGeometryToWktButton" loadOnClick="true" smallImage="Images/GenericButtonBlue16.png" largeImage="Images/GFToWkt.png">
+        <button id="GisFabriek_WktExporter_ExportGeometryToWktButton" caption="Export WKT" className="ExportGeometryToWktButton" loadOnClick="true" smallImage="Images/ToWKT_S.png" largeImage="Images/ToWKT.png">
           <tooltip heading="Tooltip Heading">Export the first selected geometry to WKT<disabledText /></tooltip>
         </button>
-        <button id="GisFabriek_WktExporter_ImportGeometryFromWktButton" caption="Import from WKT" className="ImportGeometryFromWktButton" loadOnClick="true" smallImage="Images/GenericButtonBlue16.png" largeImage="Images/GFFromWkt.png">
+        <button id="GisFabriek_WktExporter_ImportGeometryFromWktButton" caption="Import WKT" className="ImportGeometryFromWktButton" loadOnClick="true" smallImage="Images/FromWKT_S.png" largeImage="Images/FromWKT.png">
           <tooltip heading="Tooltip Heading">Import WKT into a FeatureLayer<disabledText /></tooltip>
         </button>
       </controls>

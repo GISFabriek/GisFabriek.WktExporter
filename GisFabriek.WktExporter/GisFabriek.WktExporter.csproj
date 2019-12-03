@@ -188,10 +188,6 @@
     <Resource Include="Images\GISFabriek.png" />
   </ItemGroup>
   <ItemGroup>
-    <AddInContent Include="Images\GFFromWkt.png" />
-    <AddInContent Include="Images\GFToWkt.png" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Localization\Resources.nl.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.nl.Designer.cs</LastGenOutput>
@@ -201,7 +197,16 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <AddInContent Include="Images\FromWKT.png" />
+    <AddInContent Include="Images\ToWKT.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AddInContent Include="Images\FromWKT_S.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AddInContent Include="Images\ToWKT_S.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!--
   PackageAction can be:
