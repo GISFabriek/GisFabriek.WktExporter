@@ -21,7 +21,7 @@ namespace GisFabriek.WktExporter
 
     public static class WktGeometryExtensions
     {
-        private static int WebMercatorWkId = 3857;
+        private static int _webMercatorWkId = 3857;
 
         public static async Task<string> ToWellKnownText(this Geometry geometry)
         {
@@ -96,7 +96,6 @@ namespace GisFabriek.WktExporter
 
         private static string BuildWellKnownText(Multipoint points)
         {
-            //Example - MULTIPOINT ((10 40), (40 30), (20 20), (30 10))
             //Example - MULTIPOINT (10 40, 40 30, 20 20, 30 10)
             var suffix = string.Empty;
             if (points.HasZ)
@@ -150,7 +149,7 @@ namespace GisFabriek.WktExporter
                 return "LINESTRING "+ suffix + "(" + BuildWellKnownText(polyline.Points) + ")";
             }
 
-            return "MULTILINESTRING " + suffix + BuildWellKnownText(polyline.Parts);
+            return "MULTILINESTRING " + suffix + BuildWellKnownText(polyline.Parts, false);
         }
 
         private static async Task<string> BuildWellKnownText(Polygon polygon)
@@ -172,12 +171,6 @@ namespace GisFabriek.WktExporter
                 return string.Empty;
             }
 
-            //FIXME - ArcObjects does not have a "multipolygon", however a polygon with multiple exterior rings needs to be a multipolygon in WKT
-            //ArcGIS does not differentiate between multi-ring polygons and multipolygons
-            //Each polygon is simply a collection of rings in any order.
-            //in ArcObjects a ring is clockwise for outer, and counterclockwise for inner (interior is on your right)
-            //FIXME - In Wkt, exterior rings are counterclockwise, and interior are clockwise (interior is on your left) --> done
-            //FIXME - In Wkt, a polygon is one exterior, and zero or more interior rings --> done
             var outerPartCount = 0;
             foreach (var part in polygon.Parts)
             {
@@ -211,12 +204,11 @@ namespace GisFabriek.WktExporter
                 return "MULTIPOLYGON " + suffix + BuildWellKnownText(polygons);
             }
 
-            return "POLYGON " + suffix + BuildWellKnownText(polygon.Parts);
+            return "POLYGON " + suffix + BuildWellKnownText(polygon.Parts, true);
         }
 
         private static bool IsOuterRing(ReadOnlySegmentCollection part)
         {
-            // construct a list of ordered coordinate pairs
             var ringCoordinates = new List<Coordinate2D>();
 
             foreach (var segment in part)
@@ -225,13 +217,8 @@ namespace GisFabriek.WktExporter
                 ringCoordinates.Add(segment.EndCoordinate);
             }
 
-            // this is not the true area of the part
-            // a negative number indicates an outer ring and a positive number represents an inner ring
-            // (this is the opposite from the ArcGIS.Core.Geometry understanding)
             var signedArea = 0.0;
 
-            // for all coordinates pairs compute the area
-            // the last coordinate needs to reach back to the starting coordinate to complete
             for (var i = 0; i < ringCoordinates.Count - 1; i++)
             {
                 var x1 = ringCoordinates[i].X;
@@ -255,7 +242,6 @@ namespace GisFabriek.WktExporter
 
             // if signedArea is a negative number => indicates an outer ring 
             // if signedArea is a positive number => indicates an inner ring
-            // (this is the opposite from the ArcGIS.Core.Geometry understanding)
             return signedArea < 0;
         }
 
@@ -263,16 +249,13 @@ namespace GisFabriek.WktExporter
         {
             return await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run(() =>
             {
-                // list holding the part(wktString) of the input geometry
                 var singleParts = new List<Geometry>();
 
-                // check if the input is a null pointer or if the geometry is empty
                 if (inputGeometry == null || inputGeometry.IsEmpty)
                 {
                     return singleParts;
                 }
 
-                // based on the type of geometry, take the parts/points and add them individually into a list
                 switch (inputGeometry.GeometryType)
                 {
                     case GeometryType.Envelope:
@@ -286,7 +269,6 @@ namespace GisFabriek.WktExporter
                         if (inputGeometry is Multipoint multiPoint)
                             foreach (var point in multiPoint.Points)
                             {
-                                // add each point of collection as a standalone point into the list
                                 singleParts.Add(point);
                             }
 
@@ -299,8 +281,6 @@ namespace GisFabriek.WktExporter
                         if (inputGeometry is Polygon polygon)
                             foreach (var polygonPart in polygon.Parts)
                             {
-                                // use the PolygonBuilder turning the segments into a standalone 
-                                // polygon instance
                                 var singlePart = PolygonBuilder.CreatePolygon(polygonPart);
                                 singlePart = GeometryEngine.Instance.SimplifyAsFeature(singlePart, true) as Polygon;
                                 singleParts.Add(singlePart);
@@ -312,8 +292,6 @@ namespace GisFabriek.WktExporter
                         if (inputGeometry is Polyline polyline)
                             foreach (var polylinePart in polyline.Parts)
                             {
-                                // use the PolylineBuilder turning the segments into a standalone
-                                // polyline instance
                                 var singlePart = PolylineBuilder.CreatePolyline(polylinePart);
                                 singlePart = GeometryEngine.Instance.SimplifyAsFeature(singlePart, true) as Polyline;
                                 singleParts.Add(singlePart);
@@ -345,7 +323,7 @@ namespace GisFabriek.WktExporter
                     {
                         stringBuilder.Append(",");
                     }
-                    stringBuilder.Append(BuildWellKnownText(polygon.Parts));
+                    stringBuilder.Append(BuildWellKnownText(polygon.Parts, true));
                 }
             }
 
@@ -353,61 +331,105 @@ namespace GisFabriek.WktExporter
             return stringBuilder.ToString();
         }
 
-        private static string BuildWellKnownText(ReadOnlyPartCollection parts)
+        private static string BuildWellKnownText(ReadOnlyPartCollection parts, bool isPolygon)
         {
             var stringBuilder = new StringBuilder();
             stringBuilder.Append("(");
             using (var segments = parts.GetEnumerator())
             {
-                var outerRing = new List<MapPoint>();
-                var innerRings = new List<List<MapPoint>>();
-                while (segments.MoveNext())
+                if (isPolygon)
                 {
-                    var seg = segments.Current;
-                    if (seg != null)
-                    {
-                        if (IsOuterRing(seg))
-                        {
-                            for (var i = 0; i < seg.Count; i++)
-                            {
-                                var item = seg[i];
-                                outerRing.Add(item.StartPoint);
-                                if (i == seg.Count - 1)
-                                {
-                                    outerRing.Add(item.EndPoint);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            var innerRing = new List<MapPoint>();
-                            for (var i = 0; i < seg.Count; i++)
-                            {
-                                var item = seg[i];
-                                innerRing.Add(item.StartPoint);
-                                if (i == seg.Count - 1)
-                                {
-                                    innerRing.Add(item.EndPoint);
-                                }
-                            }
-
-                            innerRings.Add(innerRing);
-                        }
-                    }
+                    BuildPolygonText(segments, stringBuilder);
                 }
-
-                outerRing.Reverse();
-                stringBuilder.AppendFormat("({0})", BuildWellKnownText(outerRing));
-                foreach (var innerRing in innerRings)
+                else
                 {
-                    innerRing.Reverse();
-                    stringBuilder.AppendFormat(",({0})", BuildWellKnownText(innerRing));
+                    BuildLinestringText(segments, stringBuilder);
                 }
-
             }
 
             stringBuilder.Append(")");
             return stringBuilder.ToString();
+        }
+
+        private static void BuildLinestringText(IEnumerator<ReadOnlySegmentCollection> segments,
+            StringBuilder stringBuilder)
+        {
+            var start = true;
+            while (segments.MoveNext())
+            {
+                var seg = segments.Current;
+                if (seg != null)
+                {
+                    var line = new List<MapPoint>();
+                    for (var i = 0; i < seg.Count; i++)
+                    {
+                        var item = seg[i];
+                        line.Add(item.StartPoint);
+                        if (i == seg.Count - 1)
+                        {
+                            line.Add(item.EndPoint);
+                        }
+                    }
+
+                    if (start)
+                    {
+                        start = false;
+                    }
+                    else
+                    {
+                        stringBuilder.Append(",");
+                    }
+                    stringBuilder.AppendFormat("({0})", BuildWellKnownText(line));
+                }
+            }
+        }
+
+        private static void BuildPolygonText(IEnumerator<ReadOnlySegmentCollection> segments, StringBuilder stringBuilder)
+        {
+            var outerRing = new List<MapPoint>();
+            var innerRings = new List<List<MapPoint>>();
+            while (segments.MoveNext())
+            {
+                var seg = segments.Current;
+                if (seg != null)
+                {
+                    if (IsOuterRing(seg))
+                    {
+                        for (var i = 0; i < seg.Count; i++)
+                        {
+                            var item = seg[i];
+                            outerRing.Add(item.StartPoint);
+                            if (i == seg.Count - 1)
+                            {
+                                outerRing.Add(item.EndPoint);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var innerRing = new List<MapPoint>();
+                        for (var i = 0; i < seg.Count; i++)
+                        {
+                            var item = seg[i];
+                            innerRing.Add(item.StartPoint);
+                            if (i == seg.Count - 1)
+                            {
+                                innerRing.Add(item.EndPoint);
+                            }
+                        }
+
+                        innerRings.Add(innerRing);
+                    }
+                }
+            }
+
+            outerRing.Reverse();
+            stringBuilder.AppendFormat("({0})", BuildWellKnownText(outerRing));
+            foreach (var innerRing in innerRings)
+            {
+                innerRing.Reverse();
+                stringBuilder.AppendFormat(",({0})", BuildWellKnownText(innerRing));
+            }
         }
 
 
@@ -428,30 +450,35 @@ namespace GisFabriek.WktExporter
                 return string.Empty;
             }
 
-            stringBuilder.AppendFormat(CultureInfo.InvariantCulture, "{0} {1}", points[0].X, points[0].Y);
+            stringBuilder.AppendFormat(CultureInfo.InvariantCulture, "{0} {1}", GetNumberAsString(points[0].X), GetNumberAsString(points[0].Y));
             if (points[0].HasZ)
             {
-                stringBuilder.AppendFormat(CultureInfo.InvariantCulture, " {0}", points[0].Z);
+                stringBuilder.AppendFormat(CultureInfo.InvariantCulture, " {0}", GetNumberAsString(points[0].Z));
             }
 
             if (points[0].HasM)
             {
-                stringBuilder.AppendFormat(CultureInfo.InvariantCulture, " {0}", points[0].M);
+                stringBuilder.AppendFormat(CultureInfo.InvariantCulture, " {0}", GetNumberAsString(points[0].M));
             }
             for (var i = 1; i < pointCount; i++)
             {
-                stringBuilder.AppendFormat(CultureInfo.InvariantCulture, ",{0} {1}", points[i].X, points[i].Y);
+                stringBuilder.AppendFormat(CultureInfo.InvariantCulture, ",{0} {1}", GetNumberAsString(points[i].X), GetNumberAsString(points[i].Y));
                 if (points[i].HasZ)
                 {
-                    stringBuilder.AppendFormat(CultureInfo.InvariantCulture, " {0}", points[i].Z);
+                    stringBuilder.AppendFormat(CultureInfo.InvariantCulture, " {0}",GetNumberAsString(points[i].Z));
                 }
 
                 if (points[i].HasM)
                 {
-                    stringBuilder.AppendFormat(CultureInfo.InvariantCulture, " {0}", points[i].M);
+                    stringBuilder.AppendFormat(CultureInfo.InvariantCulture, " {0}", GetNumberAsString(points[i].M));
                 }
             }
             return stringBuilder.ToString();
+        }
+
+        private static string GetNumberAsString(double number)
+        {
+            return string.Format(CultureInfo.InvariantCulture, "{0}", Math.Round(number, 8)); // Round to 8 decimal places to avoid weird numbers in the WKT
         }
 
         private static async Task<Geometry> BuildGeometry(string wktString, SpatialReference spatialReference, bool simplified)
@@ -652,7 +679,7 @@ namespace GisFabriek.WktExporter
         private static async Task<SpatialReference> CreateDefaultSpatialReference()
         {
             return await ArcGIS.Desktop.Framework.Threading.Tasks.QueuedTask.Run(() =>
-                SpatialReferenceBuilder.CreateSpatialReference(WebMercatorWkId));
+                SpatialReferenceBuilder.CreateSpatialReference(_webMercatorWkId));
         }
     }
 

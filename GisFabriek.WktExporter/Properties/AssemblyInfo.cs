@@ -6,7 +6,11 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("GisFabriek.WktExporter")]
 [assembly: AssemblyDescription("Tool for converting an Esri Geometry to and from a WKT string")]
-[assembly: AssemblyConfiguration("")]
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug")]
+#else
+[assembly: AssemblyConfiguration("Release")]
+#endif
 [assembly: AssemblyCompany("De GISFabriek")]
 [assembly: AssemblyProduct("GisFabriek.WktExporter")]
 [assembly: AssemblyCopyright("Copyright © De GISFabriek 2019")]

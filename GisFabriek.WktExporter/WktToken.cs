@@ -7,7 +7,7 @@ namespace GisFabriek.WktExporter
 {
     internal class WktToken
     {
-        private string _text;
+        private readonly string _text;
         internal WktToken(string text)
         {
             _text = StripGeometryName(text);
@@ -17,32 +17,50 @@ namespace GisFabriek.WktExporter
         {
             get
             {
-                _text = StripLeadingBraces(_text);
-                _text = StripTrailingBraces(_text);
-                while (_text.Contains("(("))
+                var parts = new List<string>();
+                if (_text.Contains(")),((")) // It is a MULTIPOLYGON
                 {
-                    _text = _text.Replace("((", "(");
-                }
-                while (_text.Contains("))"))
-                {
-                    _text = _text.Replace("))", ")");
-                }
-
-                if (_text.Contains("),("))
-                {
-                   string[] separator = { "),(" };
-                   var split = _text.Split(separator, StringSplitOptions.RemoveEmptyEntries);
-                   foreach (var item in split)
-                   {
-                       yield return new WktToken(item);
-                   }
+                    string[] separator = {")),(("};
+                    var split = _text.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+                    parts.AddRange(split);
                 }
                 else
                 {
-                    yield return new WktToken(_text);
+                    parts.Add(_text);
                 }
-                
+                var tokenStrings = new List<string>();
+                foreach (var part in parts)
+                {
+                    if (part.Contains("),(")) // There a multiple parts
+                    {
+                        string[] separator = { "),(" };
+                        var split = part.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+                        foreach (var item in split)
+                        {
+                            var tokenString = CleanUpBraces(item);
+                            tokenStrings.Add(tokenString);
+                        }
+                    }
+                    else
+                    {
+                        var tokenString = CleanUpBraces(part);
+                        tokenStrings.Add(tokenString);
+                    }
+                }
+
+                foreach (var tokenString in tokenStrings)
+                {
+                    yield return new WktToken(tokenString);
+                }
             }
+        }
+
+        private string CleanUpBraces(string item)
+        {
+            var temp = item;
+            temp = temp.Replace("(", string.Empty);
+            temp = temp.Replace(")", string.Empty);
+            return temp;
         }
 
         internal  IEnumerable<WktToken> PointGroups
@@ -80,26 +98,6 @@ namespace GisFabriek.WktExporter
                     yield return Convert.ToDouble(item, CultureInfo.InvariantCulture);
                 }
             }
-        }
-
-        private string StripLeadingBraces(string text)
-        {
-            while (text.StartsWith("("))
-            {
-                text = text.Substring(1);
-            }
-
-            return text;
-        }
-
-        private string StripTrailingBraces(string text)
-        {
-            while (text.EndsWith(")"))
-            {
-                text = text.Substring(0, text.Length - 1);
-            }
-
-            return text;
         }
 
         private string StripGeometryName(string text)
