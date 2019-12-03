@@ -147,6 +147,9 @@
   <data name="NoFeatureSelectedCaption" xml:space="preserve">
     <value>Geen Feature geselecteerd</value>
   </data>
+  <data name="PleaseWaitMessage" xml:space="preserve">
+    <value>Even geduld...</value>
+  </data>
   <data name="ReadyTextFragment" xml:space="preserve">
     <value>Klaar</value>
   </data>

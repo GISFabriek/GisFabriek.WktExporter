@@ -151,6 +151,15 @@ namespace GisFabriek.WktExporter.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please Wait....
+        /// </summary>
+        public static string PleaseWaitMessage {
+            get {
+                return ResourceManager.GetString("PleaseWaitMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ready.
         /// </summary>
         public static string ReadyTextFragment {

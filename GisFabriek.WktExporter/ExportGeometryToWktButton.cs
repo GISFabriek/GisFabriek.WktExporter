@@ -59,9 +59,10 @@ namespace GisFabriek.WktExporter
         {
             if (_showWktWindow != null)
                 return;
-            _showWktWindow = new ShowWktWindow {Owner = Application.Current.MainWindow, WktText = wktString};
+            _showWktWindow = new ShowWktWindow {Owner = Application.Current.MainWindow, WktText = Localization.Resources.PleaseWaitMessage };
             _showWktWindow.Closed += (o, e) => { _showWktWindow = null; };
             _showWktWindow.Show();
+            _showWktWindow.WktText = wktString;
         }
     }
 }
