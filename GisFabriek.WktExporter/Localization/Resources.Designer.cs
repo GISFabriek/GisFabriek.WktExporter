@@ -151,7 +151,7 @@ namespace GisFabriek.WktExporter.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WKT is not a (0). Please enter a valid (0) WKT string..
+        ///   Looks up a localized string similar to WKT is not a {0}. Please enter a valid {0} WKT string..
         /// </summary>
         public static string InvalidWktTypeMessageTemplate {
             get {

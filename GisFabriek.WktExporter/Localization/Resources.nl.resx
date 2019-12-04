@@ -148,7 +148,7 @@
     <value>Import</value>
   </data>
   <data name="InvalidWktTypeMessageTemplate" xml:space="preserve">
-    <value>WKT is geen (0). Geef a.u.b. een valide (0) WKT tekst op.</value>
+    <value>WKT is geen {0}. Geef a.u.b. een valide {0} WKT tekst op.</value>
   </data>
   <data name="LayerTextFragment" xml:space="preserve">
     <value>Laag</value>

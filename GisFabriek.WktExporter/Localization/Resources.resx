@@ -148,7 +148,7 @@
     <value>Import</value>
   </data>
   <data name="InvalidWktTypeMessageTemplate" xml:space="preserve">
-    <value>WKT is not a (0). Please enter a valid (0) WKT string.</value>
+    <value>WKT is not a {0}. Please enter a valid {0} WKT string.</value>
   </data>
   <data name="LayerTextFragment" xml:space="preserve">
     <value>Layer</value>
