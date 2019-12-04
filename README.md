@@ -1,10 +1,12 @@
 **GisFabriek.WktExporter**
 
-This repository contains an ArcGIS Pro 2.4 Add-In consisting of a Toolbar Tab with two buttons.
+This repository contains the C# source for an ArcGIS Pro 2.4 Add-In consisting of a Toolbar Tab with two buttons.
 
 The first button exports one single Geometry to a WKT string. The geometry to be exported is the first one encountered in the selected items of the Feature Layers.
 
 The second button imports one single WKT string as a Feature into the selected Feature Layer (provided that the Feature Layer contains the correct geometry type)
+
+See https://github.com/GISFabriek/GisFabriek.WktExporter-AddIn for the compiled Add-In
 
 **Licensing**
 
