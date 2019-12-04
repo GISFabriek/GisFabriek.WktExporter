@@ -46,6 +46,7 @@ namespace GisFabriek.WktExporter
     public static class WktGeometryExtensions
     {
         private static int _webMercatorWkId = 3857;
+        private static int _decimalDigitsToRound = 12;
 
         public static async Task<string> ToWellKnownText(this Geometry geometry)
         {
@@ -502,7 +503,7 @@ namespace GisFabriek.WktExporter
 
         private static string GetNumberAsString(double number)
         {
-            return double.IsNaN(number) ? "0.0" : string.Format(CultureInfo.InvariantCulture, "{0}", Math.Round(number, 8));
+            return double.IsNaN(number) ? "0.0" : string.Format(CultureInfo.InvariantCulture, "{0}", Math.Round(number, _decimalDigitsToRound));
         }
 
         private static async Task<Geometry> BuildGeometry(string wktString, SpatialReference spatialReference, bool simplified)
