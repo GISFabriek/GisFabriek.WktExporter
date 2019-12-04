@@ -40,9 +40,17 @@ namespace GisFabriek.WktExporter
                         if (cursor.Current is Feature feature)
                         {
                             var geometry = feature.GetShape();
-                            var text = await geometry.ToWellKnownText();
+
                             wktWindowShown = true;
-                            UiHelper.RunOnUiThread(() => Show(text));
+                            UiHelper.RunOnUiThread(Show);
+                            var text = await geometry.ToWellKnownText();
+                            UiHelper.RunOnUiThread(() =>
+                            {
+                                if (_showWktWindow != null)
+                                {
+                                    _showWktWindow.WktText = text;
+                                }
+                            });
                         }
                         break;
                     }
@@ -50,19 +58,20 @@ namespace GisFabriek.WktExporter
 
                 if (!wktWindowShown)
                 {
-                    UiHelper.RunOnUiThread(() => { MessageBox.Show(Localization.Resources.SelectAFeatureMessage, Localization.Resources.NoFeatureSelectedCaption);});
+                    UiHelper.RunOnUiThread(() => { MessageBox.Show(Localization.Resources.SelectAFeatureMessage, Localization.Resources.NoFeatureSelectedCaption); });
                 }
             });
         }
 
-        public void Show(string wktString)
+        public void Show()
         {
             if (_showWktWindow != null)
+            {
                 return;
-            _showWktWindow = new ShowWktWindow {Owner = Application.Current.MainWindow, WktText = Localization.Resources.PleaseWaitMessage };
+            }
+            _showWktWindow = new ShowWktWindow { Owner = Application.Current.MainWindow, WktText = Localization.Resources.PleaseWaitMessage };
             _showWktWindow.Closed += (o, e) => { _showWktWindow = null; };
             _showWktWindow.Show();
-            _showWktWindow.WktText = wktString;
         }
     }
 }

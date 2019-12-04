@@ -30,10 +30,10 @@
       <controls>
         <!-- add your controls here -->
         <button id="GisFabriek_WktExporter_ExportGeometryToWktButton" caption="Exporteer WKT" className="ExportGeometryToWktButton" loadOnClick="true" smallImage="Images/GenericButtonBlue16.png" largeImage="Images/GFToWkt.png">
-          <tooltip heading="Tooltip Heading">Exporteer de eerst geselecteerde geometrie naar WKT<disabledText /></tooltip>
+          <tooltip heading="Geometrie naar WKT">Exporteer de eerst geselecteerde geometrie naar WKT<disabledText /></tooltip>
         </button>
         <button id="GisFabriek_WktExporter_ImportGeometryFromWktButton" caption="Importeer WKT" className="ImportGeometryFromWktButton" loadOnClick="true" smallImage="Images/GenericButtonBlue16.png" largeImage="Images/GFFromWkt.png">
-          <tooltip heading="Tooltip Heading">Importeer WKT in een FeatureLayer<disabledText /></tooltip>
+          <tooltip heading="WKT naar Geometrie">Importeer WKT in een FeatureLayer<disabledText /></tooltip>
         </button>
       </controls>
     </insertModule>

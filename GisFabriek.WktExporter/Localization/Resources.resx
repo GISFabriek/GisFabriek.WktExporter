@@ -132,8 +132,17 @@
   <data name="EnterAValidWktStringMessage" xml:space="preserve">
     <value>Please enter a valid WKT string.</value>
   </data>
+  <data name="ErrorCaption" xml:space="preserve">
+    <value>Error</value>
+  </data>
   <data name="ExportButtonText" xml:space="preserve">
     <value>Export...</value>
+  </data>
+  <data name="GeometryBagNotSupportedMessage" xml:space="preserve">
+    <value>Geometry bag to WKT is not yet supported</value>
+  </data>
+  <data name="GeometryCollectionNotSupportedMessage" xml:space="preserve">
+    <value>WKT GeometryCollection to GeometryCollection is not yet supported</value>
   </data>
   <data name="ImportButtonText" xml:space="preserve">
     <value>Import</value>
@@ -144,11 +153,17 @@
   <data name="LayerTextFragment" xml:space="preserve">
     <value>Layer</value>
   </data>
+  <data name="MalformedWktWrongNumberOfElelementsFragment" xml:space="preserve">
+    <value>Malformed WKT, wrong number of elements, expecting</value>
+  </data>
   <data name="NoFeatureSelectedCaption" xml:space="preserve">
     <value>No Feature selected</value>
   </data>
   <data name="PleaseWaitMessage" xml:space="preserve">
     <value>Please Wait...</value>
+  </data>
+  <data name="PolyhedralSurfaceNotSupportedMessage" xml:space="preserve">
+    <value>WKT PolyhedralSurface to MultiPatch is not yet supported</value>
   </data>
   <data name="ReadyTextFragment" xml:space="preserve">
     <value>Ready</value>
@@ -173,6 +188,12 @@
   </data>
   <data name="TypeTextFragment" xml:space="preserve">
     <value>Type</value>
+  </data>
+  <data name="UnsupportedGeometryType" xml:space="preserve">
+    <value>Unsupported geometry type</value>
+  </data>
+  <data name="WktCouldNotBeConvertedToGeometryErrorMessage" xml:space="preserve">
+    <value>WKT could not be converted to a Geometry</value>
   </data>
   <data name="WktGeometryAddedMessage" xml:space="preserve">
     <value>WKT Geometry added as new Feature. Please check the Feature attributes.</value>

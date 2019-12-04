@@ -15,7 +15,7 @@ using SpatialReference = ArcGIS.Core.Geometry.SpatialReference;
 namespace GisFabriek.WktExporter
 {
     /// <summary>
-    /// Transform Esri geometries to and from the Well-known Text representation, as defined in
+    /// Transform Esri geometries to and from the WKT representation, as defined in
     /// section 7 of http://www.opengeospatial.org/standards/sfa
     /// </summary>
 
@@ -69,7 +69,7 @@ namespace GisFabriek.WktExporter
 
             if (geometry is GeometryBag)
             {
-                throw new NotImplementedException("Geometry bags to Well-known Text is not yet supported");
+                throw new NotImplementedException(Localization.Resources.GeometryBagNotSupportedMessage);
             }
 
             return string.Empty;
@@ -497,7 +497,7 @@ namespace GisFabriek.WktExporter
                 case WktType.Triangle:
                     return await BuildPolygon(wkt, spatialReference, simplified);
                 case WktType.PolyhedralSurface:
-                    throw new NotImplementedException("Well-known Text PolyhedralSurface to MultiPatch is not yet supported");
+                    throw new NotImplementedException(Localization.Resources.PolyhedralSurfaceNotSupportedMessage);
                 case WktType.Tin:
                     return await BuildPolygon(wkt, spatialReference, simplified);  // TODO is this OK?
                 case WktType.MultiPoint:
@@ -507,9 +507,9 @@ namespace GisFabriek.WktExporter
                 case WktType.MultiPolygon:
                     return await BuildPolygon(wkt, spatialReference, simplified);
                  case WktType.GeometryCollection:
-                     throw new NotImplementedException("Well-known Text GeometryCollection to GeometryCollection is not yet supported");
+                     throw new NotImplementedException(Localization.Resources.GeometryCollectionNotSupportedMessage);
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(wktString), @"Unsupported geometry type: " + wkt.Type);
+                    throw new ArgumentOutOfRangeException(nameof(wktString), Localization.Resources.UnsupportedGeometryType + @": " + wkt.Type);
             }
         }
 
@@ -624,22 +624,22 @@ namespace GisFabriek.WktExporter
             var partCount = coordinates.Length;
             if (!wkt.HasZ && !wkt.HasM && partCount != 2)
             {
-                throw new ArgumentException("Malformed Well-known Text, wrong number of elements, expecting x and y");
+                throw new ArgumentException( Localization.Resources.MalformedWktWrongNumberOfElelementsFragment + " x y");
             }
 
             if (wkt.HasZ && !wkt.HasM && partCount != 3)
             {
-                throw new ArgumentException("Malformed Well-known Text, wrong number of elements, expecting x y z");
+                throw new ArgumentException(Localization.Resources.MalformedWktWrongNumberOfElelementsFragment + " x y z");
             }
 
             if (!wkt.HasZ && wkt.HasM && partCount != 3)
             {
-                throw new ArgumentException("Malformed Well-known Text, wrong number of elements, expecting x y m");
+                throw new ArgumentException(Localization.Resources.MalformedWktWrongNumberOfElelementsFragment + " x y m");
             }
 
             if (wkt.HasZ && wkt.HasM && partCount != 4)
             {
-                throw new ArgumentException("Malformed Well-known Text, wrong number of elements, expecting x y z m");
+                throw new ArgumentException(Localization.Resources.MalformedWktWrongNumberOfElelementsFragment + " x y z m");
             }
 
             MapPoint mapPoint;

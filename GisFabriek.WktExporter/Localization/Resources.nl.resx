@@ -132,8 +132,17 @@
   <data name="EnterAValidWktStringMessage" xml:space="preserve">
     <value>Geef een valide WKT tekst op.</value>
   </data>
+  <data name="ErrorCaption" xml:space="preserve">
+    <value>Fout</value>
+  </data>
   <data name="ExportButtonText" xml:space="preserve">
     <value>Export...</value>
+  </data>
+  <data name="GeometryBagNotSupportedMessage" xml:space="preserve">
+    <value>Geometry bag naar WKTwordt nog niet ondersteund</value>
+  </data>
+  <data name="GeometryCollectionNotSupportedMessage" xml:space="preserve">
+    <value>WKT Text GeometryCollection naar GeometryCollection wordt nog niet ondersteund</value>
   </data>
   <data name="ImportButtonText" xml:space="preserve">
     <value>Import</value>
@@ -144,11 +153,17 @@
   <data name="LayerTextFragment" xml:space="preserve">
     <value>Laag</value>
   </data>
+  <data name="MalformedWktWrongNumberOfElelementsFragment" xml:space="preserve">
+    <value>Incorrecte WKT, verkeerd aantal elementen. Verwacht werd</value>
+  </data>
   <data name="NoFeatureSelectedCaption" xml:space="preserve">
     <value>Geen Feature geselecteerd</value>
   </data>
   <data name="PleaseWaitMessage" xml:space="preserve">
     <value>Even geduld...</value>
+  </data>
+  <data name="PolyhedralSurfaceNotSupportedMessage" xml:space="preserve">
+    <value>WKT PolyhedralSurface naar MultiPatch wordt nog niet ondersteund</value>
   </data>
   <data name="ReadyTextFragment" xml:space="preserve">
     <value>Klaar</value>
@@ -173,6 +188,12 @@
   </data>
   <data name="TypeTextFragment" xml:space="preserve">
     <value>Type</value>
+  </data>
+  <data name="UnsupportedGeometryType" xml:space="preserve">
+    <value>Niet-ondersteund Geometrietype</value>
+  </data>
+  <data name="WktCouldNotBeConvertedToGeometryErrorMessage" xml:space="preserve">
+    <value>WKT kon niet worden geconverteerd naar een Geometrie</value>
   </data>
   <data name="WktGeometryAddedMessage" xml:space="preserve">
     <value>De WKT Geometrie is toegevoegd als een nieuw Feature. Check a.u.b de Featureattributen.</value>

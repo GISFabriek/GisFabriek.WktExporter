@@ -106,11 +106,38 @@ namespace GisFabriek.WktExporter.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error.
+        /// </summary>
+        public static string ErrorCaption {
+            get {
+                return ResourceManager.GetString("ErrorCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Export....
         /// </summary>
         public static string ExportButtonText {
             get {
                 return ResourceManager.GetString("ExportButtonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Geometry bag to WKT is not yet supported.
+        /// </summary>
+        public static string GeometryBagNotSupportedMessage {
+            get {
+                return ResourceManager.GetString("GeometryBagNotSupportedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WKT GeometryCollection to GeometryCollection is not yet supported.
+        /// </summary>
+        public static string GeometryCollectionNotSupportedMessage {
+            get {
+                return ResourceManager.GetString("GeometryCollectionNotSupportedMessage", resourceCulture);
             }
         }
         
@@ -142,6 +169,15 @@ namespace GisFabriek.WktExporter.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Malformed WKT, wrong number of elements, expecting.
+        /// </summary>
+        public static string MalformedWktWrongNumberOfElelementsFragment {
+            get {
+                return ResourceManager.GetString("MalformedWktWrongNumberOfElelementsFragment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No Feature selected.
         /// </summary>
         public static string NoFeatureSelectedCaption {
@@ -156,6 +192,15 @@ namespace GisFabriek.WktExporter.Localization {
         public static string PleaseWaitMessage {
             get {
                 return ResourceManager.GetString("PleaseWaitMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WKT PolyhedralSurface to MultiPatch is not yet supported.
+        /// </summary>
+        public static string PolyhedralSurfaceNotSupportedMessage {
+            get {
+                return ResourceManager.GetString("PolyhedralSurfaceNotSupportedMessage", resourceCulture);
             }
         }
         
@@ -228,6 +273,24 @@ namespace GisFabriek.WktExporter.Localization {
         public static string TypeTextFragment {
             get {
                 return ResourceManager.GetString("TypeTextFragment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unsupported geometry type.
+        /// </summary>
+        public static string UnsupportedGeometryType {
+            get {
+                return ResourceManager.GetString("UnsupportedGeometryType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WKT could not be converted to a Geometry.
+        /// </summary>
+        public static string WktCouldNotBeConvertedToGeometryErrorMessage {
+            get {
+                return ResourceManager.GetString("WktCouldNotBeConvertedToGeometryErrorMessage", resourceCulture);
             }
         }
         

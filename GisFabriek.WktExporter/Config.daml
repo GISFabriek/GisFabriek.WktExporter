@@ -21,7 +21,7 @@
       <groups>
         <!-- comment this out if you have no controls on the Addin tab to avoid
               an empty group-->
-        <group id="GisFabriekWktExporter_Tools" caption="Well-known Text" appearsOnAddInTab="false">
+        <group id="GisFabriekWktExporter_Tools" caption="Well-known text" appearsOnAddInTab="false">
           <!-- host controls within groups -->
           <button refID="GisFabriek_WktExporter_ExportGeometryToWktButton" size="large" />
           <button refID="GisFabriek_WktExporter_ImportGeometryFromWktButton" size="large" />
@@ -30,10 +30,10 @@
       <controls>
         <!-- add your controls here -->
         <button id="GisFabriek_WktExporter_ExportGeometryToWktButton" caption="Export WKT" className="ExportGeometryToWktButton" loadOnClick="true" smallImage="Images/ToWKT_S.png" largeImage="Images/ToWKT.png">
-          <tooltip heading="Tooltip Heading">Export the first selected geometry to WKT<disabledText /></tooltip>
+          <tooltip heading="Geometry To WKT">Export the first selected geometry to WKT<disabledText /></tooltip>
         </button>
         <button id="GisFabriek_WktExporter_ImportGeometryFromWktButton" caption="Import WKT" className="ImportGeometryFromWktButton" loadOnClick="true" smallImage="Images/FromWKT_S.png" largeImage="Images/FromWKT.png">
-          <tooltip heading="Tooltip Heading">Import WKT into a FeatureLayer<disabledText /></tooltip>
+          <tooltip heading="WKT to Geometry">Import WKT into a FeatureLayer<disabledText /></tooltip>
         </button>
       </controls>
     </insertModule>

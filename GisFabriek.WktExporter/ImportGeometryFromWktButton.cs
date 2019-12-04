@@ -1,4 +1,5 @@
-﻿using ArcGIS.Core.CIM;
+﻿using System;
+using ArcGIS.Core.CIM;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework.Contracts;
@@ -66,8 +67,10 @@ namespace GisFabriek.WktExporter
             var shapeType = await QueuedTask.Run(() => _selectedFeatureLayer.ShapeType);
             _addWktWindow = new AddWktWindow
             {
-                Owner = Application.Current.MainWindow, FeatureLayerName = $"{Localization.Resources.LayerTextFragment}: {_selectedFeatureLayer.Name}",
-                TypeInfo = $"{Localization.Resources.TypeTextFragment}: {GetShapeName(shapeType)}; {Localization.Resources.SpatialReferenceTextFragment}: {wkId}"
+                Owner = Application.Current.MainWindow,
+                FeatureLayerName = $"{Localization.Resources.LayerTextFragment}: {_selectedFeatureLayer.Name}",
+                TypeInfo =
+                    $"{Localization.Resources.TypeTextFragment}: {GetShapeName(shapeType)}; {Localization.Resources.SpatialReferenceTextFragment}: {wkId}"
             };
             if (_addWktWindow.ShowDialog() == true)
             {
@@ -75,6 +78,7 @@ namespace GisFabriek.WktExporter
                 if (string.IsNullOrWhiteSpace(text))
                 {
                     MessageBox.Show(Localization.Resources.EnterAValidWktStringMessage);
+                    _addWktWindow = null;
                     return;
                 }
 
@@ -83,23 +87,42 @@ namespace GisFabriek.WktExporter
                 {
                     var shapeName = GetShapeName(shapeType);
                     MessageBox.Show(string.Format(Localization.Resources.InvalidWktTypeMessageTemplate, shapeName));
+                    _addWktWindow = null;
                     return;
                 }
 
-                var geometry = await text.ToGeometry(wkId, true);
-                var succeeded = await AddGeometry(_selectedFeatureLayer, geometry);
-                if (!succeeded)
+                try
                 {
-                    MessageBox.Show(Localization.Resources.AddingFeatureDidNotSucceedErrorMessage);
-                    return;
+                    var geometry = await text.ToGeometry(wkId, true);
+                    if (geometry == null)
+                    {
+                        MessageBox.Show(Localization.Resources.WktCouldNotBeConvertedToGeometryErrorMessage);
+                        _addWktWindow = null;
+                        return;
+                    }
+                    var succeeded = await AddGeometry(_selectedFeatureLayer, geometry);
+                    if (!succeeded)
+                    {
+                        MessageBox.Show(Localization.Resources.AddingFeatureDidNotSucceedErrorMessage);
+                        _addWktWindow = null;
+                        return;
+                    }
+
+                    FrameworkApplication.AddNotification(new SucceededNotification()
+                    {
+                        Title = Localization.Resources.ReadyTextFragment,
+                        Message = Localization.Resources.WktGeometryAddedMessage,
+                        ImageUrl = NotificationImageUrl
+                    });
                 }
-                FrameworkApplication.AddNotification(new SucceededNotification()
+                catch (Exception ex)
                 {
-                    Title = Localization.Resources.ReadyTextFragment,
-                    Message = Localization.Resources.WktGeometryAddedMessage,
-                    ImageUrl = NotificationImageUrl
-                });
+                    MessageBox.Show(ex.Message, Localization.Resources.ErrorCaption);
+
+                }
+
             }
+
             _addWktWindow = null;
 
         }
