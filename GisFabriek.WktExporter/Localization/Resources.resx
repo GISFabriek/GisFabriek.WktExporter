@@ -198,4 +198,7 @@
   <data name="WktGeometryAddedMessage" xml:space="preserve">
     <value>WKT Geometry added as new Feature. Please check the Feature attributes.</value>
   </data>
+  <data name="WktIsEmptyErrorMessage" xml:space="preserve">
+    <value>WKT is empty</value>
+  </data>
 </root>

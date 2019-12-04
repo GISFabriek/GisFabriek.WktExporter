@@ -1,4 +1,28 @@
-﻿using System;
+﻿/*
+    MIT License
+
+    Copyright (c) 2019 De GISFabriek
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+*/
+
+using System;
 
 namespace GisFabriek.WktExporter
 {
@@ -8,7 +32,7 @@ namespace GisFabriek.WktExporter
         {
             if (string.IsNullOrEmpty(s))
             {
-                throw new ArgumentException("WKT is empty");
+                throw new ArgumentException(Localization.Resources.WktIsEmptyErrorMessage, nameof(s));
             }
             ParsePrefix(s);
         }
@@ -23,8 +47,6 @@ namespace GisFabriek.WktExporter
 
         internal WktToken Token { get; private set; }
 
-        internal string ZmText => (HasZ ? "Z" : "") + (HasM ? "M" : "");
-
         private void ParsePrefix(string s)
         {
             var startIndex = s.IndexOf('(');
@@ -36,21 +58,21 @@ namespace GisFabriek.WktExporter
 
             CoordinateCount = 2;
 
-            prefix = prefix.Trim().ToLower();
+            prefix = prefix.Trim().ToUpper();
 
-            if (prefix.EndsWith(" z"))
+            if (prefix.EndsWith(" Z"))
             {
                 HasZ = true;
                 CoordinateCount = 3;
             }
 
-            if (prefix.EndsWith(" m"))
+            if (prefix.EndsWith(" M"))
             {
                 HasM = true;
                 CoordinateCount = 3;
             }
 
-            if (prefix.EndsWith(" zm"))
+            if (prefix.EndsWith(" ZM"))
             {
                 HasM = true;
                 HasZ = true;
@@ -58,53 +80,53 @@ namespace GisFabriek.WktExporter
             }
 
             Type = WktType.None;
-            if (prefix.StartsWith("point"))
+            if (prefix.StartsWith("POINT"))
             {
                 Type = WktType.Point;
             }
-            if (prefix.StartsWith("linestring"))
+            if (prefix.StartsWith("LINESTRING"))
 
             {
                 Type = WktType.LineString;
             }
 
-            if (prefix.StartsWith("polygon"))
+            if (prefix.StartsWith("POLYGON"))
             {
                 Type = WktType.Polygon;
             }
 
-            if (prefix.StartsWith("polyhedralsurface"))
+            if (prefix.StartsWith("POLYHEDRALSURFACE"))
             {
                 Type = WktType.PolyhedralSurface;
             }
 
-            if (prefix.StartsWith("triangle"))
+            if (prefix.StartsWith("TRIANGLE"))
             {
                 Type = WktType.Triangle;
             }
 
-            if (prefix.StartsWith("tin"))
+            if (prefix.StartsWith("TIN"))
             {
                 Type = WktType.Tin;
             }
 
-            if (prefix.StartsWith("multipoint"))
+            if (prefix.StartsWith("MULTIPOINT"))
             {
                 s = NormalizeForMultiPoint(s);
                 Type = WktType.MultiPoint;
             }
 
-            if (prefix.StartsWith("multilinestring"))
+            if (prefix.StartsWith("MULTILINESTRING"))
             {
                 Type = WktType.MultiLineString;
             }
 
-            if (prefix.StartsWith("multipolygon"))
+            if (prefix.StartsWith("MULTIPOLYGON"))
             {
                 Type = WktType.MultiPolygon;
             }
 
-            if (prefix.StartsWith("geometrycollection"))
+            if (prefix.StartsWith("GEOMETRYCOLLECTION"))
             {
                 Type = WktType.GeometryCollection;
             }

@@ -302,5 +302,14 @@ namespace GisFabriek.WktExporter.Localization {
                 return ResourceManager.GetString("WktGeometryAddedMessage", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WKT is empty.
+        /// </summary>
+        public static string WktIsEmptyErrorMessage {
+            get {
+                return ResourceManager.GetString("WktIsEmptyErrorMessage", resourceCulture);
+            }
+        }
     }
 }
